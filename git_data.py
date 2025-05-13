@@ -3,6 +3,7 @@ from git import Repo
 # from datetime import datetime, timedelta
 from datetime import datetime, date, timedelta
 from mail.send_mail import send_daily_report
+import textwrap
 
 app = Flask(__name__)
 @app.route('/send-report', methods=['GET'])
@@ -106,8 +107,11 @@ def send_report():
         Warm regards,
         Nithesh
         """
-        final_report = final_report + "\n".join(cleaned_items)+"\n" + footer_text
-
+        # final_report = final_report + "\n".join(cleaned_items)+"\n" + footer_text
+        
+        # Combine all parts of the report.
+        final_report = textwrap.dedent(final_report) + "\n".join(cleaned_items) + textwrap.dedent(footer_text)
+        
         # Append repo-wise detailed commits
         # final_report += "\n\n📂 Repository Breakdown\n=======================" + "".join(report_sections)
 

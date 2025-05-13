@@ -11,10 +11,10 @@ def send_daily_report(report_content):
     print("📧 Mailing Process Started... ✉️")
     # Static email configuration
     sender_email = "terionorganization@gmail.com"
-    receiver_email = ["nithish@dreaminfinity.in"]
-    cc_email = ["nitheshwaran003@gmail.in"]
-    # receiver_email = ["nithish@dreaminfinity.in","dineshkarthik@dreaminfinity.in","aswin@ezbillpay.in"]
-    # cc_email = ["aswin@dreaminfinity.in"]
+    # receiver_email = ["nithish@dreaminfinity.in"]
+    # cc_email = ["nitheshwaran003@gmail.in"]
+    receiver_email = ["nithish@dreaminfinity.in","dineshkarthik@dreaminfinity.in","aswin@ezbillpay.in"]
+    cc_email = ["aswin@dreaminfinity.in"]
     password = "imkq rydg xtla lvmx"  # Use App Password if Gmail
 
     # Setup the email
