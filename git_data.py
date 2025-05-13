@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from git import Repo
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 from mail.send_mail import send_daily_report
 
 app = Flask(__name__)
@@ -10,7 +11,8 @@ def send_report():
         print("📊 Gathering Reports ... 📈")
         # Set time window
         n = 1
-        since = datetime.now() - timedelta(days=n)
+        # since = datetime.now() - timedelta(days=n)
+        since = datetime.combine(date.today(), datetime.min.time())
 
         # Define repositories with labels
         repos = {
@@ -31,7 +33,8 @@ def send_report():
                 if commit_time > since:
                     msg = commit.summary
                     author = commit.author.name
-                    section.append(f"📝 {msg} — _{author}_")
+                    section.append(f"{msg}")
+                    # section.append(f"📝 {msg} — _{author}_")
                     commit_count += 1
 
                     # Track author stats
@@ -41,16 +44,16 @@ def send_report():
         # print("📂 Categorizing Reports 🗂️")
         # Highlights
         highlights = {
-            "✨ Features": [],
-            "🐛 Bug Fixes": [],
-            "♻️ Refactors": [],
-            "🧹 Other Changes": []
+            "Features": [],
+            "Bug Fixes": [],
+            "Refactors": [],
+            "Other Changes": []
         }
 
         keywords = {
-            "✨ Features": ["add", "feature", "implement", "create"],
-            "🐛 Bug Fixes": ["fix", "resolve", "bug", "error"],
-            "♻️ Refactors": ["refactor", "clean", "optimize", "structure"]
+            "Features": ["add", "feature", "implement", "create"],
+            "Bug Fixes": ["fix", "resolve", "bug", "error"],
+            "Refactors": ["refactor", "clean", "optimize", "structure"]
         }
         # print("⚙️ Generating Reports 📊")
         for section in report_sections:
@@ -63,26 +66,50 @@ def send_report():
                         matched = True
                         break
                 if not matched and line.strip().startswith("📝"):
-                    highlights["🧹 Other Changes"].append(line)
+                    highlights["Other Changes"].append(line)
         
         # print("✨ Highlights Reports 🌟")
         # Build final report
+        # ==============================
         final_report = f"""
-        ==============================
-        🗓️ Daily Code Report (Last {n} Days)
-        ==============================
+        Hi,\n
+        🗓️ Daily Status Report ({datetime.now().strftime('%B %d, %Y')})
+        Following are the current updates,
+        """
+        # ==============================
+        # 🔢 Total Commits: {commit_count}
+        # 👨‍💻 Contributors:
+        # + "\n".join([f"- {author}: {count} commits" for author, count in author_stats.items()]) + "\n"
 
-        🔢 Total Commits: {commit_count}
-        👨‍💻 Contributors:
-        """ + "\n".join([f"- {author}: {count} commits" for author, count in author_stats.items()]) + "\n"
 
         # Append highlights
+        # for title, items in highlights.items():
+        #     import pdb; pdb.set_trace()
+        #     if items:
+        #         final_report += f"\n{title}\n" + "-"*len(title) + "\n" + "\n".join(items) + "\n"
+
+        cleaned_items = []
+        # import pdb; pdb.set_trace()
+
         for title, items in highlights.items():
             if items:
-                final_report += f"\n{title}\n" + "-"*len(title) + "\n" + "\n".join(items) + "\n"
+                # cleaned_items.append(f"\n{title}\n" + "-"*len(title))
+                cleaned_items.append(f"\n{title} : \n")
+                for item in items:
+                    # Remove emoji at the start and trailing attribution
+                    cleaned_item = item.lstrip("*").strip()
+                    if "— _Nithi_'" in cleaned_item:
+                        cleaned_item = cleaned_item.split("— _Nithi_'")[0].strip()
+                    cleaned_items.append(f"- {cleaned_item}\n")
+
+        footer_text = """
+        Warm regards,
+        Nithesh
+        """
+        final_report = final_report + "\n".join(cleaned_items)+"\n" + footer_text
 
         # Append repo-wise detailed commits
-        final_report += "\n\n📂 Repository Breakdown\n=======================" + "".join(report_sections)
+        # final_report += "\n\n📂 Repository Breakdown\n=======================" + "".join(report_sections)
 
         # Send the email with the report
         send_daily_report(final_report)

@@ -11,15 +11,18 @@ def send_daily_report(report_content):
     print("📧 Mailing Process Started... ✉️")
     # Static email configuration
     sender_email = "terionorganization@gmail.com"
-    receiver_email = ["nitheshwaran003@gmail.com", "nithish@dreaminfinity.in","nithish@ezbillpay.in"]
+    receiver_email = ["nithish@dreaminfinity.in"]
+    cc_email = ["nitheshwaran003@gmail.in"]
+    # receiver_email = ["nithish@dreaminfinity.in","dineshkarthik@dreaminfinity.in","aswin@ezbillpay.in"]
+    # cc_email = ["aswin@dreaminfinity.in"]
     password = "imkq rydg xtla lvmx"  # Use App Password if Gmail
 
     # Setup the email
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = "🗓️ Daily Git Commit Report v1"
+    msg["Subject"] = "🗓️ Daily Status Report"
     msg["From"] = sender_email
     msg["To"] = ", ".join(receiver_email)
-
+    msg["Cc"] = ", ".join(cc_email)
     # Attach the plain text report
     text_part = MIMEText(report_content, "plain")
     msg.attach(text_part)
